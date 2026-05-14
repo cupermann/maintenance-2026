@@ -1,0 +1,293 @@
+<?php
+
+namespace App\Filament\Admin\Resources;
+
+use App\Filament\Admin\Resources\PermintaanMaintenanceResource\Pages;
+use App\Models\PermintaanMaintenance;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
+class PermintaanMaintenanceResource extends Resource
+{
+    protected static ?string $model = PermintaanMaintenance::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+
+    protected static ?string $navigationGroup = 'Maintenance';
+
+    protected static ?string $navigationLabel = 'Permintaan Maintenance';
+
+    protected static ?string $modelLabel = 'Permintaan Maintenance';
+
+    protected static ?string $pluralModelLabel = 'Permintaan Maintenance';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\Section::make('Data Permintaan')
+                    ->schema([
+                        Forms\Components\TextInput::make('kode_permintaan')
+                            ->label('Kode Permintaan')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('Otomatis dibuat oleh sistem'),
+
+                        Forms\Components\Select::make('user_id')
+                            ->label('Pelapor')
+                            ->relationship(
+                                name: 'user',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->where('role', 'user')
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Select::make('ruangan_id')
+                            ->label('Ruangan')
+                            ->relationship('ruangan', 'nama_ruangan')
+                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                return "{$record->kode_ruangan} - {$record->nama_ruangan}";
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Select::make('kategori_kerusakan_id')
+                            ->label('Kategori Kerusakan')
+                            ->relationship('kategoriKerusakan', 'nama_kategori')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\TextInput::make('judul')
+                            ->label('Judul')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        Forms\Components\Textarea::make('deskripsi')
+                            ->label('Deskripsi')
+                            ->required()
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                        Forms\Components\FileUpload::make('foto_kerusakan')
+                            ->label('Foto Kerusakan')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('foto-kerusakan')
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Status Permintaan')
+                    ->schema([
+                        Forms\Components\Select::make('prioritas')
+                            ->label('Prioritas')
+                            ->options([
+                                'rendah' => 'Rendah',
+                                'sedang' => 'Sedang',
+                                'tinggi' => 'Tinggi',
+                                'darurat' => 'Darurat',
+                            ])
+                            ->default('sedang')
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'diajukan' => 'Diajukan',
+                                'diverifikasi' => 'Diverifikasi',
+                                'ditolak' => 'Ditolak',
+                                'ditugaskan' => 'Ditugaskan',
+                                'diproses' => 'Diproses',
+                                'selesai' => 'Selesai',
+                            ])
+                            ->default('diajukan')
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Textarea::make('catatan_admin')
+                            ->label('Catatan Admin')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Tanggal')
+                    ->schema([
+                        Forms\Components\DateTimePicker::make('tanggal_laporan')
+                            ->label('Tanggal Laporan')
+                            ->default(now()),
+
+                        Forms\Components\DateTimePicker::make('tanggal_verifikasi')
+                            ->label('Tanggal Verifikasi'),
+
+                        Forms\Components\DateTimePicker::make('tanggal_selesai')
+                            ->label('Tanggal Selesai'),
+                    ])
+                    ->columns(3),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('kode_permintaan')
+                    ->label('Kode')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Pelapor')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('ruangan.nama_ruangan')
+                    ->label('Ruangan')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('kategoriKerusakan.nama_kategori')
+                    ->label('Kategori')
+                    ->searchable()
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('judul')
+                    ->label('Judul')
+                    ->searchable()
+                    ->limit(35),
+
+                Tables\Columns\ImageColumn::make('foto_kerusakan')
+                    ->label('Foto')
+                    ->square(),
+
+                Tables\Columns\TextColumn::make('prioritas')
+                    ->label('Prioritas')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'rendah' => 'Rendah',
+                        'sedang' => 'Sedang',
+                        'tinggi' => 'Tinggi',
+                        'darurat' => 'Darurat',
+                        default => '-',
+                    })
+                    ->color(fn (?string $state): string => match ($state) {
+                        'rendah' => 'gray',
+                        'sedang' => 'info',
+                        'tinggi' => 'warning',
+                        'darurat' => 'danger',
+                        default => 'gray',
+                    }),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => match ($state) {
+                        'diajukan' => 'Diajukan',
+                        'diverifikasi' => 'Diverifikasi',
+                        'ditolak' => 'Ditolak',
+                        'ditugaskan' => 'Ditugaskan',
+                        'diproses' => 'Diproses',
+                        'selesai' => 'Selesai',
+                        default => '-',
+                    })
+                    ->color(fn (?string $state): string => match ($state) {
+                        'diajukan' => 'gray',
+                        'diverifikasi' => 'info',
+                        'ditolak' => 'danger',
+                        'ditugaskan' => 'warning',
+                        'diproses' => 'primary',
+                        'selesai' => 'success',
+                        default => 'gray',
+                    }),
+
+                Tables\Columns\TextColumn::make('tanggal_laporan')
+                    ->label('Tanggal Laporan')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('tanggal_verifikasi')
+                    ->label('Tanggal Verifikasi')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('tanggal_selesai')
+                    ->label('Tanggal Selesai')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('prioritas')
+                    ->label('Prioritas')
+                    ->options([
+                        'rendah' => 'Rendah',
+                        'sedang' => 'Sedang',
+                        'tinggi' => 'Tinggi',
+                        'darurat' => 'Darurat',
+                    ]),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'diajukan' => 'Diajukan',
+                        'diverifikasi' => 'Diverifikasi',
+                        'ditolak' => 'Ditolak',
+                        'ditugaskan' => 'Ditugaskan',
+                        'diproses' => 'Diproses',
+                        'selesai' => 'Selesai',
+                    ]),
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ])
+            ->defaultSort('created_at', 'desc');
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListPermintaanMaintenances::route('/'),
+            'create' => Pages\CreatePermintaanMaintenance::route('/create'),
+            'edit' => Pages\EditPermintaanMaintenance::route('/{record}/edit'),
+        ];
+    }
+}

@@ -1,23 +1,42 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Livewire\Livewire;
-use Illuminate\Support\Facades\Response;
 
-/* NOTE: Do Not Remove
-/ Livewire asset handling if using sub folder in domain
-*/
-
-Livewire::setUpdateRoute(function ($handle) {
-    return Route::post(config('app.asset_prefix') . '/livewire/update', $handle);
-});
-
-Livewire::setScriptRoute(function ($handle) {
-    return Route::get(config('app.asset_prefix') . '/livewire/livewire.js', $handle);
-});
-/*
-/ END
-*/
 Route::get('/', function () {
-    return view('welcome');
-});
+    if (! Auth::check()) {
+        return view('auth.login');
+    }
+
+    $user = Auth::user();
+
+    if (in_array($user->role, ['super_admin', 'admin'])) {
+        return redirect('/admin');
+    }
+
+    if ($user->role === 'teknisi') {
+        return redirect('/teknisi');
+    }
+
+    return redirect()->route('dashboard-pelapor');
+})->name('home');
+
+Route::view('/login', 'auth.login')
+    ->middleware('guest')
+    ->name('login');
+
+Route::view('/dashboard-pelapor', 'frontend.dashboard-pelapor')
+    ->middleware('auth')
+    ->name('dashboard-pelapor');
+
+Route::view('/lapor-maintenance', 'public.lapor-maintenance')
+    ->name('lapor-maintenance');
+
+Route::post('/logout', function () {
+    Auth::logout();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('home');
+})->name('logout');

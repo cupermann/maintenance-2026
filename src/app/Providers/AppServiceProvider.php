@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Policies\ActivityPolicy;
+use App\Http\Responses\LogoutResponse;
+use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
 use Filament\Actions\MountableAction;
 use Filament\Notifications\Livewire\Notifications;
 use Filament\Notifications\Notification;
@@ -21,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+         $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
     }
 
     /**
