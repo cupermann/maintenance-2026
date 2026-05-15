@@ -225,8 +225,8 @@
             </button>
         </form>
 
-        <a href="{{ url('/') }}" class="back-link">
-            ← Kembali ke halaman login
+        <a href="{{ route('pelapor.dashboard') }}" class="back-link">
+             ← Kembali ke Dashboard Pelapor
         </a>
     </div>
 </div>

@@ -46,33 +46,38 @@ class PermintaanMaintenance extends Model
             }
 
             if (empty($permintaan->status)) {
-            $permintaan->status = 'diajukan';
+                $permintaan->status = 'diajukan';
             }
         });
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function ruangan()
     {
-        return $this->belongsTo(Ruangan::class);
+        return $this->belongsTo(Ruangan::class, 'ruangan_id');
     }
 
     public function kategoriKerusakan()
     {
-        return $this->belongsTo(KategoriKerusakan::class);
+        return $this->belongsTo(KategoriKerusakan::class, 'kategori_kerusakan_id');
+    }
+
+    public function penugasanTeknisis()
+    {
+        return $this->hasMany(PenugasanTeknisi::class, 'permintaan_maintenance_id');
     }
 
     public function penugasanTeknisi()
     {
-        return $this->hasOne(PenugasanTeknisi::class);
+        return $this->hasOne(PenugasanTeknisi::class, 'permintaan_maintenance_id');
     }
 
     public function progresPerbaikans()
     {
-        return $this->hasMany(ProgresPerbaikan::class);
+        return $this->hasMany(ProgresPerbaikan::class, 'permintaan_maintenance_id');
     }
 }

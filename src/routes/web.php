@@ -25,12 +25,14 @@ Route::view('/login', 'auth.login')
     ->middleware('guest')
     ->name('login');
 
-Route::view('/dashboard-pelapor', 'frontend.dashboard-pelapor')
-    ->middleware('auth')
-    ->name('dashboard-pelapor');
+Route::view('/pelapor', 'public.dashboard-pelapor')
+    ->name('pelapor.dashboard');
 
 Route::view('/lapor-maintenance', 'public.lapor-maintenance')
     ->name('lapor-maintenance');
+
+Route::view('/riwayat-laporan', 'public.riwayat-laporan')
+    ->name('riwayat-laporan');
 
 Route::post('/logout', function () {
     Auth::logout();

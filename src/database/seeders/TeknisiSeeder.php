@@ -10,23 +10,21 @@ class TeknisiSeeder extends Seeder
 {
     public function run(): void
     {
-        $Teknisi = User::query()
+        $userTeknisi = User::query()
             ->where('email', 'teknisi@admin.com')
             ->first();
 
-        if (! $Teknisi) {
+        if (! $userTeknisi) {
             return;
         }
 
         Teknisi::query()->updateOrCreate(
-            ['user_id' => $Teknisi->id],
+            ['user_id' => $userTeknisi->id],
             [
-                'kode_teknisi' => 'TKN-001',
                 'nama_teknisi' => 'Teknisi Maintenance',
+                'keahlian' => 'General Maintenance',
                 'no_telepon' => '082222222222',
-                'keahlian' => 'Maintenance Gedung',
                 'status' => 'aktif',
-                'alamat' => 'Area Kampus Utama',
             ]
         );
     }

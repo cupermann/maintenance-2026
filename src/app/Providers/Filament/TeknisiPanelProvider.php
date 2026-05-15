@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Teknisi\Resources\PermintaanMaintenanceResource;
+use App\Filament\Teknisi\Resources\PenugasanTeknisiResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,15 +32,15 @@ class TeknisiPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Teknisi/Resources'), for: 'App\\Filament\\Teknisi\\Resources')
-            ->discoverPages(in: app_path('Filament/Teknisi/Pages'), for: 'App\\Filament\\Teknisi\\Pages')
+            ->resources([
+                PermintaanMaintenanceResource::class,
+                PenugasanTeknisiResource::class,
+            ])
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Teknisi/Widgets'), for: 'App\\Filament\\Teknisi\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

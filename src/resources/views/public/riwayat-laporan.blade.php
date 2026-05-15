@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Lapor Maintenance Gedung</title>
+    <title>Riwayat Laporan Maintenance</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     @livewireStyles
@@ -31,7 +31,7 @@
             font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         }
 
-        .report-page {
+        .page {
             margin: 0 !important;
             padding: 40px 20px;
             width: 100%;
@@ -43,18 +43,18 @@
                 linear-gradient(135deg, #07111f 0%, #0b1728 45%, #07101d 100%);
         }
 
-        .report-container {
+        .container {
             width: 100%;
-            max-width: 920px;
+            max-width: 980px;
             margin: 0 auto;
         }
 
-        .report-header {
+        .header {
             text-align: center;
             margin-bottom: 28px;
         }
 
-        .report-logo {
+        .logo {
             width: 54px;
             height: 54px;
             margin: 0 auto 16px;
@@ -68,7 +68,7 @@
             font-size: 26px;
         }
 
-        .report-title {
+        .title {
             margin: 0;
             font-size: 32px;
             line-height: 1.2;
@@ -77,7 +77,7 @@
             letter-spacing: -0.04em;
         }
 
-        .report-subtitle {
+        .subtitle {
             max-width: 640px;
             margin: 10px auto 0;
             color: #9fb4c9;
@@ -85,9 +85,7 @@
             line-height: 1.7;
         }
 
-        .report-card {
-            width: 100%;
-            margin: 0 auto;
+        .card {
             border-radius: 28px;
             padding: 32px;
             background:
@@ -101,38 +99,38 @@
         }
 
         @media (max-width: 768px) {
-            .report-page {
+            .page {
                 padding: 24px 14px;
             }
 
-            .report-card {
+            .card {
                 padding: 24px 18px;
                 border-radius: 22px;
             }
 
-            .report-title {
+            .title {
                 font-size: 26px;
             }
         }
     </style>
 </head>
 <body>
-    <main class="report-page">
-        <div class="report-container">
-            <div class="report-header">
-                <div class="report-logo">🛠️</div>
+    <main class="page">
+        <div class="container">
+            <div class="header">
+                <div class="logo">📊</div>
 
-                <h1 class="report-title">
-                    Lapor Maintenance Gedung
+                <h1 class="title">
+                    Riwayat Laporan
                 </h1>
 
-                <p class="report-subtitle">
-                    Silakan isi form laporan kerusakan fasilitas kampus. Laporan akan masuk ke admin maintenance untuk diverifikasi.
+                <p class="subtitle">
+                    Cek status laporan maintenance dan progres perbaikan berdasarkan kode permintaan, nomor telepon, atau email pelapor.
                 </p>
             </div>
 
-            <div class="report-card">
-                <livewire:frontend.form-permintaan-maintenance />
+            <div class="card">
+                <livewire:frontend.riwayat-laporan />
             </div>
         </div>
     </main>

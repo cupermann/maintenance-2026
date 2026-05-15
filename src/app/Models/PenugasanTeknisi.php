@@ -36,18 +36,27 @@ class PenugasanTeknisi extends Model
         });
     }
 
-    public function permintaanMaintenance()
+     public function permintaanMaintenance()
     {
-        return $this->belongsTo(PermintaanMaintenance::class);
+        return $this->belongsTo(PermintaanMaintenance::class, 'permintaan_maintenance_id');
     }
 
     public function teknisi()
     {
-        return $this->belongsTo(Teknisi::class);
+        return $this->belongsTo(Teknisi::class, 'teknisi_id');
     }
 
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    public function progresPerbaikans()
+    {
+        return $this->hasMany(
+            ProgresPerbaikan::class,
+            'permintaan_maintenance_id',
+            'permintaan_maintenance_id'
+        );
     }
 }

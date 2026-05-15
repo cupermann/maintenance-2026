@@ -29,16 +29,11 @@ class PermintaanMaintenanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Data Permintaan')
+                Forms\Components\Section::make('Data Pelapor')
+                    ->description('Data pelapor dari form publik atau akun user yang login.')
                     ->schema([
-                        Forms\Components\TextInput::make('kode_permintaan')
-                            ->label('Kode Permintaan')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->placeholder('Otomatis dibuat oleh sistem'),
-
                         Forms\Components\Select::make('user_id')
-                            ->label('Pelapor')
+                            ->label('Akun Pelapor')
                             ->relationship(
                                 name: 'user',
                                 titleAttribute: 'name',
@@ -46,8 +41,35 @@ class PermintaanMaintenanceResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-                            ->required()
-                            ->native(false),
+                            ->nullable()
+                            ->native(false)
+                            ->helperText('Kosong jika laporan dibuat tanpa login.'),
+
+                        Forms\Components\TextInput::make('nama_pelapor')
+                            ->label('Nama Pelapor')
+                            ->maxLength(255)
+                            ->placeholder('Nama pelapor'),
+
+                        Forms\Components\TextInput::make('no_telepon_pelapor')
+                            ->label('No Telepon')
+                            ->maxLength(30)
+                            ->placeholder('Nomor telepon pelapor'),
+
+                        Forms\Components\TextInput::make('email_pelapor')
+                            ->label('Email')
+                            ->email()
+                            ->maxLength(255)
+                            ->placeholder('Email pelapor'),
+                    ])
+                    ->columns(2),
+
+                Forms\Components\Section::make('Data Permintaan')
+                    ->schema([
+                        Forms\Components\TextInput::make('kode_permintaan')
+                            ->label('Kode Permintaan')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->placeholder('Otomatis dibuat oleh sistem'),
 
                         Forms\Components\Select::make('ruangan_id')
                             ->label('Ruangan')
@@ -84,7 +106,10 @@ class PermintaanMaintenanceResource extends Resource
                             ->label('Foto Kerusakan')
                             ->image()
                             ->imageEditor()
+                            ->disk('public')
                             ->directory('foto-kerusakan')
+                            ->openable()
+                            ->downloadable()
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
@@ -149,15 +174,54 @@ class PermintaanMaintenanceResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('nama_pelapor')
                     ->label('Pelapor')
+                    ->getStateUsing(function ($record): string {
+                        return $record->nama_pelapor
+                            ?: $record->user?->name
+                            ?: '-';
+                    })
                     ->searchable()
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('no_telepon_pelapor')
+                    ->label('No Telepon')
+                    ->getStateUsing(function ($record): string {
+                        return $record->no_telepon_pelapor
+                            ?: $record->user?->phone
+                            ?: '-';
+                    })
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('email_pelapor')
+                    ->label('Email')
+                    ->getStateUsing(function ($record): string {
+                        return $record->email_pelapor
+                            ?: $record->user?->email
+                            ?: '-';
+                    })
+                    ->searchable()
+                    ->toggleable(),
+
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Akun User')
+                    ->placeholder('Tanpa login')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('ruangan.nama_ruangan')
                     ->label('Ruangan')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function ($state, $record): string {
+                        if (! $record->ruangan) {
+                            return '-';
+                        }
+
+                        return "{$record->ruangan->kode_ruangan} - {$record->ruangan->nama_ruangan}";
+                    }),
 
                 Tables\Columns\TextColumn::make('kategoriKerusakan.nama_kategori')
                     ->label('Kategori')
@@ -171,7 +235,9 @@ class PermintaanMaintenanceResource extends Resource
 
                 Tables\Columns\ImageColumn::make('foto_kerusakan')
                     ->label('Foto')
-                    ->square(),
+                    ->disk('public')
+                    ->square()
+                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('prioritas')
                     ->label('Prioritas')

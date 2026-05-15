@@ -373,7 +373,7 @@
 
         <div class="divider">ATAU</div>
 
-        <a href="{{ url('/lapor-maintenance') }}" class="social-button">
+        <a href="{{ route   ('pelapor.dashboard') }}" class="social-button">
             <span class="social-left">
                 <span class="social-icon">📝</span>
                 Masuk tanpa login

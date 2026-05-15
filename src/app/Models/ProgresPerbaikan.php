@@ -48,11 +48,20 @@ class ProgresPerbaikan extends Model
 
     public function permintaanMaintenance()
     {
-        return $this->belongsTo(PermintaanMaintenance::class);
+        return $this->belongsTo(PermintaanMaintenance::class, 'permintaan_maintenance_id');
     }
 
     public function teknisi()
     {
-        return $this->belongsTo(Teknisi::class);
+        return $this->belongsTo(Teknisi::class, 'teknisi_id');
+    }
+
+    public function penugasanTeknisi()
+    {
+        return $this->belongsTo(
+            PenugasanTeknisi::class,
+            'permintaan_maintenance_id',
+            'permintaan_maintenance_id'
+        );
     }
 }
