@@ -26,11 +26,11 @@ class Teknisi extends Model
 
     public function penugasanTeknisis()
     {
-        return $this->hasMany(PenugasanTeknisi::class);
+        return $this->hasMany(PenugasanTeknisi::class, 'teknisi_id');
     }
 
     public function progresPerbaikans()
     {
-        return $this->hasMany(ProgresPerbaikan::class);
+        return $this->hasMany(ProgresPerbaikan::class, 'teknisi_id');
     }
 }

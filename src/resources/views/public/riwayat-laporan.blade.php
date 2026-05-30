@@ -54,18 +54,24 @@
             margin-bottom: 28px;
         }
 
-        .logo {
-            width: 54px;
-            height: 54px;
+         .logo {
+            width: 62px;
+            height: 62px;
             margin: 0 auto 16px;
-            border-radius: 18px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(56, 189, 248, 0.14);
             border: 1px solid rgba(125, 211, 252, 0.26);
             box-shadow: 0 0 28px rgba(56, 189, 248, 0.24);
-            font-size: 26px;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
         }
 
         .title {
@@ -118,7 +124,9 @@
     <main class="page">
         <div class="container">
             <div class="header">
-                <div class="logo">📊</div>
+                <div class="logo">
+                    <img src="{{ asset('images/riwayat-laporan.png') }}" alt="Riwayat Laporan">
+                </div>
 
                 <h1 class="title">
                     Riwayat Laporan

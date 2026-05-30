@@ -77,15 +77,14 @@ class PenugasanTeknisiResource extends Resource
 
         return parent::getEloquentQuery()
             ->with([
-                'permintaanMaintenance.user',
                 'permintaanMaintenance.ruangan.gedung',
                 'permintaanMaintenance.kategoriKerusakan',
                 'permintaanMaintenance.progresPerbaikans',
-                'teknisi.user',
+                'teknisi',
                 'admin',
             ])
             ->when(
-                filled($teknisiId),
+                $teknisiId,
                 fn (Builder $query) => $query->where('teknisi_id', $teknisiId),
                 fn (Builder $query) => $query->whereRaw('1 = 0')
             );
@@ -315,7 +314,7 @@ class PenugasanTeknisiResource extends Resource
                         ProgresPerbaikan::create([
                             'permintaan_maintenance_id' => $record->permintaan_maintenance_id,
                             'teknisi_id' => $record->teknisi_id,
-                            'status_progres' => 'dikerjakan',
+                            'status_progres' => 'mulai_dikerjakan',
                             'deskripsi_progres' => $data['deskripsi_progres'],
                             'foto_progres' => $data['foto_progres'] ?? null,
                             'tanggal_progres' => now(),
@@ -343,7 +342,7 @@ class PenugasanTeknisiResource extends Resource
                     ->form([
                         Forms\Components\Textarea::make('deskripsi_progres')
                             ->label('Catatan Penyelesaian')
-                            ->placeholder('Contoh: Lampu sudah diganti dan berfungsi normal.')
+                            ->placeholder('Contoh: Kerusakan sudah diperbaiki dan fasilitas kembali normal.')
                             ->required()
                             ->rows(4),
 

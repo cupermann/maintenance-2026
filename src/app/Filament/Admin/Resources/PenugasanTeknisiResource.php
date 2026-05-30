@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PenugasanTeknisiResource\Pages;
+use App\Models\Teknisi;     
 use App\Models\PenugasanTeknisi;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -47,10 +48,11 @@ class PenugasanTeknisiResource extends Resource
 
                         Forms\Components\Select::make('teknisi_id')
                             ->label('Teknisi')
-                            ->relationship('teknisi', 'nama_teknisi')
-                            ->getOptionLabelFromRecordUsing(function ($record): string {
-                                return "{$record->nama_teknisi} - {$record->keahlian}";
-                            })
+                            ->options(
+                                Teknisi::query()
+                                    ->where('status', 'aktif')
+                                    ->pluck('nama_teknisi', 'id')
+                            )
                             ->searchable()
                             ->preload()
                             ->required()

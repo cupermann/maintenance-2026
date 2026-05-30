@@ -4,8 +4,11 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PermintaanMaintenanceResource\Pages;
 use App\Models\PermintaanMaintenance;
+use App\Models\PenugasanTeknisi;
+use App\Models\Teknisi;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -24,6 +27,19 @@ class PermintaanMaintenanceResource extends Resource
     protected static ?string $modelLabel = 'Permintaan Maintenance';
 
     protected static ?string $pluralModelLabel = 'Permintaan Maintenance';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'user',
+                'ruangan',
+                'ruangan.gedung',
+                'kategoriKerusakan',
+                'penugasanTeknisi',
+                'penugasanTeknisi.teknisi',
+            ]);
+    }
 
     public static function form(Form $form): Form
     {
@@ -204,13 +220,6 @@ class PermintaanMaintenanceResource extends Resource
                     ->searchable()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Akun User')
-                    ->placeholder('Tanpa login')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 Tables\Columns\TextColumn::make('ruangan.nama_ruangan')
                     ->label('Ruangan')
                     ->searchable()
@@ -232,6 +241,13 @@ class PermintaanMaintenanceResource extends Resource
                     ->label('Judul')
                     ->searchable()
                     ->limit(35),
+
+                Tables\Columns\TextColumn::make('penugasanTeknisi.teknisi.nama_teknisi')
+                    ->label('Teknisi')
+                    ->placeholder('Belum ditugaskan')
+                    ->badge()
+                    ->color(fn ($state): string => $state ? 'success' : 'gray')
+                    ->toggleable(),
 
                 Tables\Columns\ImageColumn::make('foto_kerusakan')
                     ->label('Foto')
@@ -330,7 +346,64 @@ class PermintaanMaintenanceResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('assign_teknisi')
+                    ->label('Assign Teknisi')
+                    ->icon('heroicon-o-user-plus')
+                    ->color('warning')
+                    ->visible(fn ($record): bool => $record->status !== 'selesai')
+                    ->form([
+                        Forms\Components\Select::make('teknisi_id')
+                            ->label('Pilih Teknisi')
+                            ->options(function (): array {
+                                return Teknisi::query()
+                                    ->orderBy('nama_teknisi')
+                                    ->pluck('nama_teknisi', 'id')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->native(false),
+
+                        Forms\Components\Textarea::make('catatan_penugasan')
+                            ->label('Catatan Penugasan')
+                            ->placeholder('Contoh: Mohon cek dan perbaiki kerusakan ini.')
+                            ->rows(4),
+                    ])
+                    ->fillForm(function ($record): array {
+                        return [
+                            'teknisi_id' => $record->penugasanTeknisi?->teknisi_id,
+                            'catatan_penugasan' => $record->penugasanTeknisi?->catatan_penugasan,
+                        ];
+                    })
+                    ->action(function ($record, array $data): void {
+                        PenugasanTeknisi::query()->updateOrCreate(
+                            [
+                                'permintaan_maintenance_id' => $record->id,
+                            ],
+                            [
+                                'teknisi_id' => $data['teknisi_id'],
+                                'admin_id' => auth()->id(),
+                                'tanggal_penugasan' => now(),
+                                'catatan_penugasan' => $data['catatan_penugasan'] ?? null,
+                            ]
+                        );
+
+                        $record->update([
+                            'status' => 'ditugaskan',
+                            'tanggal_verifikasi' => $record->tanggal_verifikasi ?? now(),
+                            'catatan_admin' => $data['catatan_penugasan'] ?? $record->catatan_admin,
+                        ]);
+
+                        Notification::make()
+                            ->title('Teknisi berhasil ditugaskan')
+                            ->body('Laporan ini sekarang masuk ke menu Tugas Saya di panel teknisi.')
+                            ->success()
+                            ->send();
+                    }),
+
                 Tables\Actions\EditAction::make(),
+
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

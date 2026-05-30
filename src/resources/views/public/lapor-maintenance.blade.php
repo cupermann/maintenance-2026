@@ -55,17 +55,24 @@
         }
 
         .report-logo {
-            width: 54px;
-            height: 54px;
+            width: 68px;
+            height: 68px;
             margin: 0 auto 16px;
-            border-radius: 18px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(56, 189, 248, 0.14);
             border: 1px solid rgba(125, 211, 252, 0.26);
             box-shadow: 0 0 28px rgba(56, 189, 248, 0.24);
-            font-size: 26px;
+            overflow: hidden;
+        }
+
+        .report-logo-img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
         }
 
         .report-title {
@@ -120,7 +127,13 @@
     <main class="report-page">
         <div class="report-container">
             <div class="report-header">
-                <div class="report-logo">🛠️</div>
+                <div class="report-logo">
+                    <img
+                        src="{{ asset('images/logo-maintenance.png') }}"
+                        alt="Logo Maintenance"
+                        class="report-logo-img"
+                    >
+                </div>
 
                 <h1 class="report-title">
                     Lapor Maintenance Gedung

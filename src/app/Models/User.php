@@ -52,7 +52,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function teknisi()
     {
-        return $this->hasOne(Teknisi::class);
+        return $this->hasOne(\App\Models\Teknisi::class, 'user_id');
     }
 
     public function permintaanMaintenances()

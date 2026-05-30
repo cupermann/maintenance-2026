@@ -52,7 +52,32 @@
             background: rgba(56, 189, 248, 0.14);
             border: 1px solid rgba(125, 211, 252, 0.26);
             box-shadow: 0 0 28px rgba(56, 189, 248, 0.24);
-            font-size: 30px;
+            overflow: hidden;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+
+        .menu-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(125, 211, 252, 0.24);
+            margin-bottom: 22px;
+            overflow: hidden;
+        }
+
+        .menu-icon img {
+            width: 38px;
+            height: 38px;
+            object-fit: contain;
         }
 
         .title {
@@ -179,7 +204,9 @@
     <main class="page">
         <div class="container">
             <div class="header">
-                <div class="logo">🛠️</div>
+                <div class="logo">
+                     <img src="{{ asset('images/logo-maintenance.png') }}" alt="Logo Maintenance">
+                </div>
 
                 <h1 class="title">
                     Dashboard Pelapor
@@ -192,7 +219,9 @@
 
             <div class="card-grid">
                 <a href="{{ route('lapor-maintenance') }}" class="menu-card">
-                    <div class="menu-icon">📝</div>
+                    <div class="menu-icon">
+                        <img src="{{ asset('images/form-laporan.png') }}" alt="Form Laporan">
+                    </div>
 
                     <h2 class="menu-title">
                         Form Laporan
@@ -208,7 +237,9 @@
                 </a>
 
                 <a href="{{ route('riwayat-laporan') }}" class="menu-card">
-                    <div class="menu-icon">📊</div>
+                    <div class="menu-icon">
+                        <img src="{{ asset('images/riwayat-laporan.png') }}" alt="Riwayat Laporan">
+                    </div>
 
                     <h2 class="menu-title">
                         Riwayat Laporan
