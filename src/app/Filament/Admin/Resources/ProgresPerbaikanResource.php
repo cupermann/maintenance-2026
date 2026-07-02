@@ -17,7 +17,17 @@ class ProgresPerbaikanResource extends Resource
 {
     protected static ?string $model = ProgresPerbaikan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+
+    protected static ?string $navigationGroup = 'Maintenance';
+
+    protected static ?string $navigationLabel = 'Progres Perbaikan';
+
+    protected static ?string $modelLabel = 'Progres Perbaikan';
+
+    protected static ?string $pluralModelLabel = 'Progres Perbaikan';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

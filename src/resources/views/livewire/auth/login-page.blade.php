@@ -376,13 +376,13 @@
         <a href="{{ route   ('pelapor.dashboard') }}" class="social-button">
             <span class="social-left">
                 <span class="social-icon">📝</span>
-                Masuk tanpa login
+                Buat Laporan
             </span>
             <span class="social-arrow">›</span>
         </a>
 
         <p class="register-text">
-            Pelapor dapat mengirim laporan kerusakan tanpa harus login.
+            2026
         </p>
 
         

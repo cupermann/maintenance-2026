@@ -6,8 +6,10 @@ use App\Filament\Admin\Resources\PermintaanMaintenanceResource\Pages;
 use App\Models\PermintaanMaintenance;
 use App\Models\PenugasanTeknisi;
 use App\Models\Teknisi;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,6 +29,8 @@ class PermintaanMaintenanceResource extends Resource
     protected static ?string $modelLabel = 'Permintaan Maintenance';
 
     protected static ?string $pluralModelLabel = 'Permintaan Maintenance';
+
+    protected static ?int $navigationSort = 1;
 
     public static function getEloquentQuery(): Builder
     {
@@ -156,10 +160,13 @@ class PermintaanMaintenanceResource extends Resource
                             ])
                             ->default('diajukan')
                             ->required()
+                            ->live()
                             ->native(false),
 
                         Forms\Components\Textarea::make('catatan_admin')
-                            ->label('Catatan Admin')
+                            ->label('Catatan Admin / Alasan Penolakan / Catatan Penutupan')
+                            ->helperText('Wajib diisi jika status laporan ditolak. Bisa juga digunakan untuk catatan penutupan laporan.')
+                            ->required(fn (Get $get): bool => $get('status') === 'ditolak')
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
@@ -295,6 +302,12 @@ class PermintaanMaintenanceResource extends Resource
                         default => 'gray',
                     }),
 
+                Tables\Columns\TextColumn::make('catatan_admin')
+                    ->label('Catatan Admin')
+                    ->limit(45)
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('tanggal_laporan')
                     ->label('Tanggal Laporan')
                     ->dateTime('d M Y H:i')
@@ -346,11 +359,46 @@ class PermintaanMaintenanceResource extends Resource
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('tolak_laporan')
+                    ->label('Tolak Laporan')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->visible(fn ($record): bool => in_array($record->status, [
+                        'diajukan',
+                        'diverifikasi',
+                    ], true))
+                    ->modalHeading('Tolak Laporan')
+                    ->modalDescription('Masukkan alasan penolakan agar pelapor mengetahui penyebab laporannya tidak diproses.')
+                    ->form([
+                        Forms\Components\Textarea::make('alasan_penolakan')
+                            ->label('Alasan Penolakan')
+                            ->placeholder('Contoh: Laporan tidak valid karena lokasi tidak jelas atau kerusakan tidak ditemukan.')
+                            ->required()
+                            ->minLength(10)
+                            ->rows(4),
+                    ])
+                    ->action(function ($record, array $data): void {
+                        $record->update([
+                            'status' => 'ditolak',
+                            'catatan_admin' => $data['alasan_penolakan'],
+                            'tanggal_verifikasi' => now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Laporan berhasil ditolak')
+                            ->body('Alasan penolakan telah disimpan pada catatan admin.')
+                            ->danger()
+                            ->send();
+                    }),
+
                 Tables\Actions\Action::make('assign_teknisi')
                     ->label('Assign Teknisi')
                     ->icon('heroicon-o-user-plus')
                     ->color('warning')
-                    ->visible(fn ($record): bool => $record->status !== 'selesai')
+                    ->visible(fn ($record): bool => ! in_array($record->status, [
+                        'ditolak',
+                        'selesai',
+                    ], true))
                     ->form([
                         Forms\Components\Select::make('teknisi_id')
                             ->label('Pilih Teknisi')
@@ -383,7 +431,7 @@ class PermintaanMaintenanceResource extends Resource
                             ],
                             [
                                 'teknisi_id' => $data['teknisi_id'],
-                                'admin_id' => auth()->id(),
+                                'admin_id' => Filament::auth()->id(),
                                 'tanggal_penugasan' => now(),
                                 'catatan_penugasan' => $data['catatan_penugasan'] ?? null,
                             ]
@@ -398,6 +446,35 @@ class PermintaanMaintenanceResource extends Resource
                         Notification::make()
                             ->title('Teknisi berhasil ditugaskan')
                             ->body('Laporan ini sekarang masuk ke menu Tugas Saya di panel teknisi.')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('tutup_laporan')
+                    ->label('Tutup Laporan')
+                    ->icon('heroicon-o-lock-closed')
+                    ->color('success')
+                    ->visible(fn ($record): bool => $record->status === 'selesai')
+                    ->modalHeading('Tutup Laporan')
+                    ->modalDescription('Pastikan hasil perbaikan teknisi sudah sesuai sebelum laporan ditutup.')
+                    ->form([
+                        Forms\Components\Textarea::make('catatan_penutupan')
+                            ->label('Catatan Penutupan')
+                            ->placeholder('Contoh: Perbaikan sudah dicek dan fasilitas sudah kembali normal.')
+                            ->required()
+                            ->minLength(10)
+                            ->rows(4),
+                    ])
+                    ->requiresConfirmation()
+                    ->action(function ($record, array $data): void {
+                        $record->update([
+                            'catatan_admin' => $data['catatan_penutupan'],
+                            'tanggal_selesai' => $record->tanggal_selesai ?? now(),
+                        ]);
+
+                        Notification::make()
+                            ->title('Laporan berhasil ditutup')
+                            ->body('Catatan penutupan laporan telah disimpan.')
                             ->success()
                             ->send();
                     }),

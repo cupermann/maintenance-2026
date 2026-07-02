@@ -5,6 +5,7 @@ namespace App\Filament\Teknisi\Resources;
 use App\Filament\Teknisi\Resources\PenugasanTeknisiResource\Pages;
 use App\Models\PenugasanTeknisi;
 use App\Models\ProgresPerbaikan;
+use App\Models\Teknisi;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -12,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class PenugasanTeknisiResource extends Resource
 {
@@ -73,19 +75,21 @@ class PenugasanTeknisiResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $teknisiId = auth()->user()?->teknisi?->id;
+        $teknisiIds = Teknisi::query()
+            ->where('user_id', auth()->id())
+            ->pluck('id');
 
         return parent::getEloquentQuery()
             ->with([
                 'permintaanMaintenance.ruangan.gedung',
                 'permintaanMaintenance.kategoriKerusakan',
-                'permintaanMaintenance.progresPerbaikans',
+                'permintaanMaintenance.progresPerbaikans.teknisi',
                 'teknisi',
                 'admin',
             ])
             ->when(
-                $teknisiId,
-                fn (Builder $query) => $query->where('teknisi_id', $teknisiId),
+                $teknisiIds->isNotEmpty(),
+                fn (Builder $query) => $query->whereIn('teknisi_id', $teknisiIds),
                 fn (Builder $query) => $query->whereRaw('1 = 0')
             );
     }
@@ -175,13 +179,53 @@ class PenugasanTeknisiResource extends Resource
                             ->content(fn ($record) => $record->permintaanMaintenance?->deskripsi ?? '-')
                             ->columnSpanFull(),
 
-                        Forms\Components\FileUpload::make('permintaanMaintenance.foto_kerusakan')
+                        Forms\Components\Placeholder::make('foto_kerusakan_preview')
                             ->label('Foto Kerusakan')
-                            ->disk('public')
-                            ->image()
-                            ->disabled()
-                            ->openable()
-                            ->downloadable()
+                            ->content(function ($record): HtmlString {
+                                $foto = $record->permintaanMaintenance?->foto_kerusakan;
+
+                                if (is_array($foto)) {
+                                    $foto = reset($foto);
+                                }
+
+                                if (! $foto) {
+                                    return new HtmlString('<span style="color: #6b7280;">Tidak ada foto kerusakan.</span>');
+                                }
+
+                                $path = ltrim($foto, '/');
+
+                                if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+                                    $url = $path;
+                                } elseif (str_starts_with($path, 'storage/')) {
+                                    $url = asset($path);
+                                } else {
+                                    $url = asset('storage/' . $path);
+                                }
+
+                                $safeUrl = e($url);
+
+                                return new HtmlString("
+                                    <div style='margin-top: 8px;'>
+                                        <a href='{$safeUrl}' target='_blank'>
+                                            <img
+                                                src='{$safeUrl}'
+                                                alt='Foto Kerusakan'
+                                                style='
+                                                    max-width: 320px;
+                                                    width: 100%;
+                                                    height: auto;
+                                                    border-radius: 12px;
+                                                    border: 1px solid #e5e7eb;
+                                                    object-fit: cover;
+                                                '
+                                            >
+                                        </a>
+                                        <div style='margin-top: 8px; font-size: 13px; color: #6b7280;'>
+                                            Klik foto untuk melihat ukuran penuh.
+                                        </div>
+                                    </div>
+                                ");
+                            })
                             ->columnSpanFull(),
                     ])
                     ->columns(2),
@@ -295,7 +339,7 @@ class PenugasanTeknisiResource extends Resource
                     ->visible(fn ($record): bool => in_array($record->permintaanMaintenance?->status, [
                         'ditugaskan',
                         'diverifikasi',
-                    ]))
+                    ], true))
                     ->form([
                         Forms\Components\Textarea::make('deskripsi_progres')
                             ->label('Catatan Progres')
@@ -306,6 +350,7 @@ class PenugasanTeknisiResource extends Resource
                         Forms\Components\FileUpload::make('foto_progres')
                             ->label('Foto Progres')
                             ->image()
+                            ->required()
                             ->disk('public')
                             ->directory('foto-progres')
                             ->imageEditor(),
@@ -349,6 +394,7 @@ class PenugasanTeknisiResource extends Resource
                         Forms\Components\FileUpload::make('foto_progres')
                             ->label('Foto Hasil Perbaikan')
                             ->image()
+                            ->required()
                             ->disk('public')
                             ->directory('foto-progres')
                             ->imageEditor(),
