@@ -7,11 +7,12 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'name',
@@ -34,7 +35,7 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-   public function canAccessPanel(\Filament\Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
             return $this->role === 'super_admin'
@@ -48,11 +49,11 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return false;
-    }   
+    }
 
     public function teknisi()
     {
-        return $this->hasOne(\App\Models\Teknisi::class, 'user_id');
+        return $this->hasOne(Teknisi::class, 'user_id');
     }
 
     public function permintaanMaintenances()
