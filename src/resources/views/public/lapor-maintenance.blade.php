@@ -2,152 +2,236 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Lapor Maintenance Gedung</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Buat Laporan | Fixora</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    {{-- CSS sidebar yang sama dengan dashboard --}}
+    <link
+        rel="stylesheet"
+        href="{{ asset('css/pelapor-sidebar.css') }}"
+    >
 
     @livewireStyles
 
     <style>
+        :root {
+            --report-border: rgba(148, 163, 184, 0.20);
+            --report-text: #f8fafc;
+        }
+
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         html {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100%;
-            min-height: 100%;
-            background: #07111f;
-            overflow-x: hidden;
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
         body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100%;
             min-height: 100vh;
-            background: #07111f;
             overflow-x: hidden;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
 
-        .report-page {
-            margin: 0 !important;
-            padding: 40px 20px;
-            width: 100%;
-            min-height: 100vh;
-            color: #e5f4ff;
+            color: var(--report-text);
+            font-family: 'Inter', sans-serif;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+
             background:
-                radial-gradient(circle at 50% 8%, rgba(56, 189, 248, 0.28), transparent 24%),
-                radial-gradient(circle at 20% 30%, rgba(14, 165, 233, 0.14), transparent 28%),
-                linear-gradient(135deg, #07111f 0%, #0b1728 45%, #07101d 100%);
+                radial-gradient(
+                    circle at 55% 12%,
+                    rgba(35, 112, 194, 0.22),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #061426 0%,
+                    #07192f 48%,
+                    #071426 100%
+                );
         }
 
-        .report-container {
+        html::-webkit-scrollbar,
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        /* Konten halaman */
+
+        .main-content {
+            padding: 28px;
+        }
+
+        .report-layout {
             width: 100%;
-            max-width: 920px;
+            max-width: 1180px;
             margin: 0 auto;
         }
 
-        .report-header {
-            text-align: center;
-            margin-bottom: 28px;
+        .form-card {
+            width: 100%;
+            min-width: 0;
+            padding: 34px;
+
+            border-radius: 24px;
+            border: 1px solid var(--report-border);
+
+            background:
+                linear-gradient(
+                    160deg,
+                    rgba(24, 53, 86, 0.96),
+                    rgba(14, 37, 65, 0.96)
+                );
+
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.18);
         }
 
-        .report-logo {
-            width: 68px;
-            height: 68px;
-            margin: 0 auto 16px;
-            border-radius: 22px;
+        .form-section-title {
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: rgba(56, 189, 248, 0.14);
-            border: 1px solid rgba(125, 211, 252, 0.26);
-            box-shadow: 0 0 28px rgba(56, 189, 248, 0.24);
-            overflow: hidden;
-        }
+            gap: 12px;
 
-        .report-logo-img {
-            width: 68px;
-            height: 68px;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.35));
-        }
+            margin-bottom: 14px;
 
-        .report-title {
-            margin: 0;
-            font-size: 32px;
-            line-height: 1.2;
-            font-weight: 800;
             color: #ffffff;
-            letter-spacing: -0.04em;
+            font-size: 20px;
+            font-weight: 800;
         }
 
-        .report-subtitle {
-            max-width: 640px;
-            margin: 10px auto 0;
-            color: #9fb4c9;
+        .form-section-title svg {
+            width: 25px;
+            height: 25px;
+            flex: 0 0 25px;
+
+            color: #4da3ff;
+        }
+
+        .form-card-description {
+            margin-bottom: 26px;
+
+            color: #9eafc5;
             font-size: 14px;
             line-height: 1.7;
         }
 
-        .report-card {
+        /* Penyesuaian form Livewire */
+
+        .form-card .report-form-wrapper {
             width: 100%;
-            margin: 0 auto;
-            border-radius: 28px;
-            padding: 32px;
-            background:
-                linear-gradient(180deg, rgba(30, 53, 76, 0.72), rgba(13, 25, 43, 0.78)),
-                rgba(15, 23, 42, 0.76);
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            box-shadow:
-                0 28px 90px rgba(0, 0, 0, 0.42),
-                inset 0 1px 0 rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(22px);
         }
 
-        @media (max-width: 768px) {
-            .report-page {
-                padding: 24px 14px;
+        .form-card .form-control {
+            background: rgba(5, 19, 35, 0.68);
+            border-color: rgba(130, 153, 182, 0.24);
+        }
+
+        .form-card .form-control:focus {
+            background: rgba(4, 17, 31, 0.88);
+        }
+
+        .form-card .submit-button {
+            min-height: 54px;
+            margin-top: 4px;
+            font-size: 15px;
+        }
+
+        /* Tablet */
+
+        @media (max-width: 1180px) {
+            .main-content {
+                padding: 24px;
+            }
+        }
+
+        /* Mobile */
+
+        @media (max-width: 860px) {
+            .main-content {
+                padding: 16px;
             }
 
-            .report-card {
-                padding: 24px 18px;
-                border-radius: 22px;
+            .form-card {
+                padding: 26px 22px;
+                border-radius: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-card {
+                padding: 22px 16px;
+                border-radius: 18px;
             }
 
-            .report-title {
-                font-size: 26px;
+            .form-section-title {
+                font-size: 18px;
+            }
+
+            .form-card-description {
+                font-size: 13px;
             }
         }
     </style>
 </head>
+
 <body>
-    <main class="report-page">
-        <div class="report-container">
-            <div class="report-header">
-                <div class="report-logo">
-                    <img
-                        src="{{ asset('images/logo-maintenance.png') }}"
-                        alt="Logo Maintenance"
-                        class="report-logo-img"
+    {{-- Sidebar yang sama dengan Dashboard Pelapor --}}
+    @include('public.partials.sidebar-pelapor')
+
+    <main class="main-content pelapor-page-content">
+        <section class="report-layout">
+            <section class="form-card">
+                <div class="form-section-title">
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
                     >
+                        <path d="M9 4h6"/>
+                        <path d="M9 2h6v4H9z"/>
+
+                        <path
+                            d="M6 4H5a2 2 0 0 0-2 2v14h18V6a2 2 0 0 0-2-2h-1"
+                        />
+
+                        <path d="m8 14 2 2 5-5"/>
+                    </svg>
+
+                    Form Laporan Kerusakan
                 </div>
 
-                <h1 class="report-title">
-                    Lapor Maintenance Gedung
-                </h1>
-
-                <p class="report-subtitle">
-                    Silakan isi form laporan kerusakan fasilitas kampus. Laporan akan masuk ke admin maintenance untuk diverifikasi.
+                <p class="form-card-description">
+                    Lengkapi seluruh data bertanda bintang agar laporan
+                    dapat dikirim dan diproses oleh admin.
                 </p>
-            </div>
 
-            <div class="report-card">
                 <livewire:frontend.form-permintaan-maintenance />
-            </div>
-        </div>
+            </section>
+        </section>
     </main>
 
     @livewireScripts

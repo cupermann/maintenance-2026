@@ -1,0 +1,288 @@
+:root {
+    --pelapor-sidebar-width: 310px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.pelapor-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+
+    display: flex;
+    flex-direction: column;
+
+    width: var(--pelapor-sidebar-width);
+    height: 100vh;
+    height: 100dvh;
+
+    padding: 36px 22px 28px;
+
+    overflow: hidden;
+
+    color: #ffffff;
+
+    background:
+        radial-gradient(
+            circle at 40% 85%,
+            rgba(42, 103, 190, 0.24),
+            transparent 30%
+        ),
+        linear-gradient(
+            180deg,
+            #0d417c 0%,
+            #083365 45%,
+            #062a56 100%
+        );
+
+    border-right: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.pelapor-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    flex-shrink: 0;
+
+    padding: 0 14px 24px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pelapor-sidebar-logo {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+
+    padding: 9px;
+    object-fit: contain;
+
+    border-radius: 17px;
+
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pelapor-sidebar-brand-name {
+    margin-bottom: 4px;
+
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.pelapor-sidebar-brand-description {
+    max-width: 170px;
+
+    color: #c7d7ed;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.pelapor-sidebar-intro {
+    flex-shrink: 0;
+
+    padding: 22px 14px 12px;
+
+    color: #cfdbec;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.pelapor-sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.pelapor-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    min-height: 62px;
+    padding: 0 20px;
+
+    color: #f1f7ff;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+
+    border-radius: 14px;
+
+    transition: 0.2s ease;
+}
+
+.pelapor-sidebar-link:hover,
+.pelapor-sidebar-link.active {
+    background: linear-gradient(
+        135deg,
+        #3374df,
+        #2864cc
+    );
+
+    box-shadow: 0 12px 26px rgba(1, 29, 69, 0.28);
+    transform: translateX(3px);
+}
+
+.pelapor-sidebar-icon {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+}
+
+.pelapor-sidebar-footer {
+    flex-shrink: 0;
+
+    margin-top: auto;
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.pelapor-sidebar-footer-title {
+    margin-bottom: 7px;
+
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.pelapor-sidebar-footer-text {
+    color: #c5d3e7;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.pelapor-mobile-header {
+    display: none;
+}
+
+.pelapor-sidebar-overlay {
+    display: none;
+}
+
+.pelapor-page-content {
+    min-height: 100vh;
+    margin-left: var(--pelapor-sidebar-width);
+}
+
+/* Tablet */
+
+@media (max-width: 1150px) {
+    :root {
+        --pelapor-sidebar-width: 270px;
+    }
+
+    .pelapor-sidebar {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
+
+    .pelapor-sidebar-link {
+        padding-right: 16px;
+        padding-left: 16px;
+        font-size: 15px;
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 900px) {
+    .pelapor-mobile-header {
+        position: sticky;
+        top: 0;
+        z-index: 45;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        height: 70px;
+        padding: 0 18px;
+
+        color: #ffffff;
+        background: #0a376b;
+
+        box-shadow: 0 7px 24px rgba(0, 0, 0, 0.20);
+    }
+
+    .pelapor-mobile-brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+    .pelapor-mobile-brand img {
+        width: 42px;
+        height: 42px;
+        object-fit: contain;
+    }
+
+    .pelapor-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 44px;
+        height: 44px;
+
+        color: #ffffff;
+        cursor: pointer;
+
+        background: rgba(255, 255, 255, 0.10);
+        border: 0;
+        border-radius: 11px;
+    }
+
+    .pelapor-sidebar {
+        width: 285px;
+
+        padding: 24px 20px;
+
+        overflow-y: auto;
+
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+    }
+
+    .pelapor-sidebar.open {
+        transform: translateX(0);
+    }
+
+    .pelapor-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+
+        display: block;
+        visibility: hidden;
+
+        background: rgba(0, 10, 26, 0.65);
+
+        opacity: 0;
+        transition: 0.25s ease;
+    }
+
+    .pelapor-sidebar-overlay.open {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .pelapor-page-content {
+        margin-left: 0;
+    }
+}
