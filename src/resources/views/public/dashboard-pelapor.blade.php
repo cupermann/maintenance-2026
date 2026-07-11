@@ -709,13 +709,13 @@
             <section class="hero">
                 <div class="hero-content">
                     <h1 class="hero-title">
-                        WELCOME 
+                        FIXORA 
                     </h1>
 
                     <div class="hero-line"></div>
 
                     <h2 class="hero-greeting">
-                        Selamat datang! 👋
+                        Fix, Organize, Report, Act
                     </h2>
 
                     <p class="hero-description">
