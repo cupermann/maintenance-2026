@@ -119,6 +119,23 @@
     transition: 0.2s ease;
 }
 
+.pelapor-sidebar-form {
+    margin: 0;
+}
+
+.pelapor-sidebar-logout-button {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    background: transparent;
+}
+
+.pelapor-sidebar-logout-button:hover {
+    color: #ffffff;
+}
+
 .pelapor-sidebar-link:hover,
 .pelapor-sidebar-link.active {
     background: linear-gradient(

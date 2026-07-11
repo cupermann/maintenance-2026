@@ -6,7 +6,6 @@
 
         .search-panel {
             padding: 24px;
-
             border-radius: 18px;
             background: rgba(5, 19, 35, 0.52);
             border: 1px solid rgba(148, 163, 184, 0.18);
@@ -195,6 +194,19 @@
 
         .report-body {
             padding: 24px;
+        }
+
+        .closing-box {
+            margin-bottom: 22px;
+            padding: 17px;
+
+            color: #bbf7d0;
+            font-size: 13px;
+            line-height: 1.65;
+
+            border-radius: 14px;
+            background: rgba(34, 197, 94, 0.10);
+            border: 1px solid rgba(74, 222, 128, 0.22);
         }
 
         .detail-grid {
@@ -654,6 +666,13 @@
                                 @if ($laporan->status === 'ditolak' && $laporan->catatan_admin)
                                     <div class="rejection-box">
                                         <strong>Alasan penolakan:</strong><br>
+                                        {{ $laporan->catatan_admin }}
+                                    </div>
+                                @endif
+
+                                @if ($laporan->status === 'selesai' && $laporan->catatan_admin)
+                                    <div class="closing-box">
+                                        <strong>Pesan penutupan dari admin:</strong><br>
                                         {{ $laporan->catatan_admin }}
                                     </div>
                                 @endif

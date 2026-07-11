@@ -309,7 +309,7 @@
             </svg>
         </div>
 
-        <h1 class="login-title">Aduan Kampus ABC</h1>
+        <h1 class="login-title">Fixora</h1>
         <p class="login-subtitle">Layanan pusat pengaduan Fasilitas Kampus.</p>
 
         <form wire:submit.prevent="login">

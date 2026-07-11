@@ -150,6 +150,33 @@
 
             Kontak
         </a>
+
+        <form
+            method="POST"
+            action="{{ route('logout') }}"
+            class="pelapor-sidebar-form"
+        >
+            @csrf
+
+            <button
+                type="submit"
+                class="pelapor-sidebar-link pelapor-sidebar-logout-button"
+            >
+                <svg
+                    class="pelapor-sidebar-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                >
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <path d="M16 17l5-5-5-5"/>
+                    <path d="M21 12H9"/>
+                </svg>
+
+                Logout
+            </button>
+        </form>
     </nav>
 
     <div class="pelapor-sidebar-footer">

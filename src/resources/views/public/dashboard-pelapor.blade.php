@@ -709,7 +709,7 @@
             <section class="hero">
                 <div class="hero-content">
                     <h1 class="hero-title">
-                        Dashboard Pelapor
+                        WELCOME 
                     </h1>
 
                     <div class="hero-line"></div>
@@ -782,7 +782,7 @@
                         class="service-link blue"
                     >
                         Buat Laporan Sekarang
-                        <span>→</span>
+                     
                     </a>
                 </article>
 
@@ -814,7 +814,7 @@
                         class="service-link green"
                     >
                         Cek Riwayat Laporan
-                        <span>→</span>
+                        
                     </a>
                 </article>
 
@@ -845,7 +845,7 @@
                         class="service-link purple"
                     >
                         Lihat Panduan
-                        <span>→</span>
+                        
                     </a>
                 </article>
             </section>

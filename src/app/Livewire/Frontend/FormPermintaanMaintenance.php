@@ -60,7 +60,7 @@ class FormPermintaanMaintenance extends Component
 
             'no_telepon_pelapor' => [
                 'required',
-                'integer',
+                'String',
                 'regex:/^[0-9]{5,15}$/',
             ],
 

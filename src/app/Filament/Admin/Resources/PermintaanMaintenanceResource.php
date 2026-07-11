@@ -357,6 +357,31 @@ class PermintaanMaintenanceResource extends Resource
                         'diproses' => 'Diproses',
                         'selesai' => 'Selesai',
                     ]),
+
+                Tables\Filters\Filter::make('tanggal_laporan')
+                    ->label('Tanggal Laporan')
+                    ->form([
+                        Forms\Components\DatePicker::make('tanggal_mulai')
+                            ->label('Dari Tanggal')
+                            ->native(false),
+
+                        Forms\Components\DatePicker::make('tanggal_selesai')
+                            ->label('Sampai Tanggal')
+                            ->native(false),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['tanggal_mulai'] ?? null,
+                                fn (Builder $query, $date): Builder => $query
+                                    ->whereDate('tanggal_laporan', '>=', $date),
+                            )
+                            ->when(
+                                $data['tanggal_selesai'] ?? null,
+                                fn (Builder $query, $date): Builder => $query
+                                    ->whereDate('tanggal_laporan', '<=', $date),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\Action::make('tolak_laporan')
@@ -440,7 +465,6 @@ class PermintaanMaintenanceResource extends Resource
                         $record->update([
                             'status' => 'ditugaskan',
                             'tanggal_verifikasi' => $record->tanggal_verifikasi ?? now(),
-                            'catatan_admin' => $data['catatan_penugasan'] ?? $record->catatan_admin,
                         ]);
 
                         Notification::make()
@@ -468,6 +492,7 @@ class PermintaanMaintenanceResource extends Resource
                     ->requiresConfirmation()
                     ->action(function ($record, array $data): void {
                         $record->update([
+                            'status' => 'selesai',
                             'catatan_admin' => $data['catatan_penutupan'],
                             'tanggal_selesai' => $record->tanggal_selesai ?? now(),
                         ]);
@@ -478,6 +503,14 @@ class PermintaanMaintenanceResource extends Resource
                             ->success()
                             ->send();
                     }),
+
+                Tables\Actions\Action::make('laporan_selesai')
+                    ->label('Selesai')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->disabled()
+                    ->visible(fn ($record): bool => $record->status === 'selesai'
+                        && filled($record->catatan_admin)),
 
                 Tables\Actions\EditAction::make(),
 
