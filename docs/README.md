@@ -1,3 +1,6 @@
+Nama: Muhammad Yusuf Bagus Syafaat
+NIM: 20240801041
+
 # Fixora - Sistem Pelaporan dan Pemantauan Perbaikan Fasilitas Kampus
 
 Fixora adalah aplikasi berbasis web untuk membantu proses pelaporan, pengelolaan, penugasan, dan pemantauan perbaikan fasilitas kampus. Sistem ini memungkinkan pelapor membuat laporan kerusakan tanpa perlu login, sementara admin dan teknisi memiliki panel khusus untuk mengelola laporan dan memperbarui progres perbaikan.
